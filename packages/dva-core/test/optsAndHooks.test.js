@@ -43,11 +43,11 @@ describe('opts and hooks', () => {
         },
       },
       effects: {
-        *[ADD_DELAY]({ payload }, { call, put }) {
-          yield put({ type: loadingAction('show') });
-          yield call(delay, 100);
-          yield put({ type: ADD, payload });
-          yield put({ type: loadingAction('hide') });
+        async [ADD_DELAY]({ call, put }, { payload }) {
+          await put({ type: loadingAction('show') });
+          await call(delay, 100);
+          await put({ type: ADD, payload });
+          await put({ type: loadingAction('hide') });
         },
       },
     });
@@ -77,7 +77,7 @@ describe('opts and hooks', () => {
       state: 0,
       effects: {
         // eslint-disable-next-line require-yield
-        *add() {
+        async add() {
           throw new Error('add failed');
         },
       },

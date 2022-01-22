@@ -8,8 +8,8 @@ export default function({
   reducers,
   initialState,
   plugin,
-  sagaMiddleware,
-  promiseMiddleware,
+  effectsMiddleware,
+  // promiseMiddleware,
   createOpts: { setupMiddlewares = returnSelf },
 }) {
   // extra enhancers
@@ -21,8 +21,8 @@ export default function({
 
   const extraMiddlewares = plugin.get('onAction');
   const middlewares = setupMiddlewares([
-    promiseMiddleware,
-    sagaMiddleware,
+    // promiseMiddleware,
+    effectsMiddleware,
     ...flatten(extraMiddlewares),
   ]);
 

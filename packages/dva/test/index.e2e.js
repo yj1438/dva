@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, cleanup } from 'react-testing-library';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 import dva, {
   connect,
   useDispatch,
@@ -11,7 +11,7 @@ import dva, {
   shallowEqual,
 } from '../dist/index';
 
-const { Link, Switch, Route, Router } = router;
+const { Link, Switch, Route, HistoryRouter } = router;
 
 afterEach(cleanup);
 
@@ -71,7 +71,7 @@ test('subscription execute multiple times', async () => {
 
   app.router(({ history }) => {
     return (
-      <Router history={history}>
+      <HistoryRouter history={history}>
         <>
           <Link to="/">Home</Link>
           <Link to="/users">Users</Link>
@@ -81,11 +81,14 @@ test('subscription execute multiple times', async () => {
             <Route path="/users" component={Users} />
           </Switch>
         </>
-      </Router>
+      </HistoryRouter>
     );
   });
 
-  const { getByTestId, getByText } = render(React.createElement(app.start()));
+  const ele = app.start();
+  console.log('ele >>>>>>');
+  console.log(ele);
+  const { getByTestId, getByText } = render(React.createElement(ele));
   expect(getByTestId('count').innerHTML).toEqual('1');
   fireEvent.click(getByText('Users'));
   await delay(100);
@@ -192,7 +195,7 @@ test('navigate', async () => {
   }
   app.router(({ history }) => {
     return (
-      <Router history={history}>
+      <HistoryRouter history={history}>
         <>
           <Link to="/">Home</Link>
           <Link to="/users">Users</Link>
@@ -208,7 +211,7 @@ test('navigate', async () => {
             <Route path="/users" component={Users} />
           </Switch>
         </>
-      </Router>
+      </HistoryRouter>
     );
   });
 

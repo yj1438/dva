@@ -58,17 +58,20 @@ function createLoading(opts = {}) {
     },
   };
 
-  function onEffect(effect, { put }, model, actionType) {
+  function onEffect(effect, { dispatch }, model, actionType) {
     const { namespace } = model;
+
     if (
       (only.length === 0 && except.length === 0) ||
       (only.length > 0 && only.indexOf(actionType) !== -1) ||
       (except.length > 0 && except.indexOf(actionType) === -1)
     ) {
-      return function*(...args) {
-        yield put({ type: SHOW, payload: { namespace, actionType } });
-        yield effect(...args);
-        yield put({ type: HIDE, payload: { namespace, actionType } });
+      return function(...args) {
+        dispatch({ type: SHOW, payload: { namespace, actionType } });
+        return effect(...args).then(resp => {
+          dispatch({ type: HIDE, payload: { namespace, actionType } });
+          return resp;
+        });
       };
     } else {
       return effect;

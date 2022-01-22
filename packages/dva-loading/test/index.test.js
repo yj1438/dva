@@ -17,9 +17,9 @@ describe('dva-loading', () => {
         },
       },
       effects: {
-        *addRemote(action, { put }) {
-          yield delay(100);
-          yield put({ type: 'add' });
+        async addRemote({ put }, action) {
+          await delay(100);
+          await put({ type: 'add' });
         },
       },
     });
@@ -63,9 +63,9 @@ describe('dva-loading', () => {
         },
       },
       effects: {
-        *addRemote(action, { put }) {
-          yield delay(100);
-          yield put({ type: 'add' });
+        async addRemote({ put }, action) {
+          await delay(100);
+          await put({ type: 'add' });
         },
       },
     });
@@ -124,11 +124,11 @@ describe('dva-loading', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        *a(action, { call }) {
-          yield call(delay, 500);
+        async a({ call }, action) {
+          await call(delay, 500);
         },
-        *b(action, { call }) {
-          yield call(delay, 500);
+        async b({ call }, action) {
+          await call(delay, 500);
         },
       },
     });
@@ -169,11 +169,11 @@ describe('dva-loading', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        *a(action, { call }) {
-          yield call(delay, 500);
+        async a({ call }, action) {
+          await call(delay, 500);
         },
-        *b(action, { call }) {
-          yield call(delay, 500);
+        async b({ call }, action) {
+          await call(delay, 500);
         },
       },
     });
@@ -215,52 +215,6 @@ describe('dva-loading', () => {
     }).toThrow('ambiguous');
   });
 
-  it('takeLatest', done => {
-    const app = dva();
-    app.use(createLoading());
-    app.model({
-      namespace: 'count',
-      state: 0,
-      reducers: {
-        add(state) {
-          return state + 1;
-        },
-      },
-      effects: {
-        addRemote: [
-          function*(action, { put }) {
-            yield delay(100);
-            yield put({ type: 'add' });
-          },
-          { type: 'takeLatest' },
-        ],
-      },
-    });
-    app.router(() => 1);
-    app.start();
-
-    expect(app._store.getState().loading).toEqual({
-      global: false,
-      models: {},
-      effects: {},
-    });
-    app._store.dispatch({ type: 'count/addRemote' });
-    app._store.dispatch({ type: 'count/addRemote' });
-    expect(app._store.getState().loading).toEqual({
-      global: true,
-      models: { count: true },
-      effects: { 'count/addRemote': true },
-    });
-    setTimeout(() => {
-      expect(app._store.getState().loading).toEqual({
-        global: false,
-        models: { count: false },
-        effects: { 'count/addRemote': false },
-      });
-      done();
-    }, 200);
-  });
-
   it('multiple effects', done => {
     const app = dva();
     app.use(createLoading());
@@ -268,11 +222,11 @@ describe('dva-loading', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        *a(action, { call }) {
-          yield call(delay, 100);
+        async a({ call }, action) {
+          await call(delay, 100);
         },
-        *b(action, { call }) {
-          yield call(delay, 500);
+        async b({ call }, action) {
+          await call(delay, 500);
         },
       },
     });
@@ -301,8 +255,8 @@ describe('dva-loading', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        *throwError(action, { call }) {
-          yield call(delay, 100);
+        async throwError({ call }, action) {
+          await call(delay, 100);
           throw new Error('haha');
         },
       },

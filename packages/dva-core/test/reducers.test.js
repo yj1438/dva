@@ -131,8 +131,8 @@ describe('reducers', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        *putSetState(action, { put }) {
-          yield put({ type: 'setState' });
+        async putSetState({ put }, action) {
+          await put({ type: 'setState' });
         },
       },
       reducers: [

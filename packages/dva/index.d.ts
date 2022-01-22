@@ -41,10 +41,9 @@ export type DvaOption = Hooks & {
 
 export interface EffectsCommandMap {
   put: <A extends AnyAction>(action: A) => any,
+  dispatch: <A extends AnyAction>(action: A) => any,
   call: Function,
   select: Function,
-  take: Function,
-  cancel: Function,
   [key: string]: any,
 }
 
@@ -141,4 +140,4 @@ export { fetch };
 
 import * as router from 'react-router-dom';
 export { router };
-export { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
+export { useLocation, useParams } from 'react-router-dom';

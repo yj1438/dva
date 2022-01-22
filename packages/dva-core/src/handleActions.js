@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 
-function identify(value) {
-  return value;
+function identify(state, action) {
+  return state;
 }
 
 function handleAction(actionType, reducer = identify) {

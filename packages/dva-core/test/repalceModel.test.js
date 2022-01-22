@@ -86,8 +86,8 @@ describe('app.replaceModel', () => {
         },
       },
       effects: {
-        *add({ payload }, { put }) {
-          yield put({
+        async add({ put }, { payload }) {
+          await put({
             type: 'setter',
             payload,
           });
@@ -105,8 +105,8 @@ describe('app.replaceModel', () => {
         },
       },
       effects: {
-        *add(_, { put }) {
-          yield put({
+        async add({ put }, _) {
+          await put({
             type: 'setter',
             payload: 'mock',
           });
@@ -193,7 +193,7 @@ describe('app.replaceModel', () => {
     expect(emitterCount).toEqual(1);
   });
 
-  it('should trigger onError if error is thown after replaceModel', () => {
+  it('should trigger onError if error is thown after replaceModel', async () => {
     let triggeredError = false;
     const app = create({
       onError() {
@@ -210,15 +210,15 @@ describe('app.replaceModel', () => {
       namespace: 'users',
       state: [],
       effects: {
-        *add() {
-          yield 'fake';
+        async add() {
+          await 'fake';
 
           throw new Error('fake error');
         },
       },
     });
 
-    app._store.dispatch({
+    await app._store.dispatch({
       type: 'users/add',
     });
 

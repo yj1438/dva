@@ -1,14 +1,6 @@
 import expect from 'expect';
 import React from 'react';
-import dva, {
-  useDispatch,
-  useSelector,
-  useStore,
-  useHistory,
-  useLocation,
-  useParams,
-  useRouteMatch,
-} from '../src/index';
+import dva, { useDispatch, useSelector, useStore, useLocation, useParams } from '../src/index';
 
 const countModel = {
   namespace: 'count',
@@ -140,10 +132,8 @@ describe('index', () => {
   });
 
   it('hooks should not be undifined', () => {
-    [useSelector, useDispatch, useStore, useHistory, useLocation, useParams, useRouteMatch].forEach(
-      hook => {
-        expect(hook !== undefined).toEqual(true);
-      },
-    );
+    [useSelector, useDispatch, useStore, useLocation, useParams].forEach(hook => {
+      expect(hook !== undefined).toEqual(true);
+    });
   });
 });

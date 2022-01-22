@@ -18,7 +18,7 @@ import * as routerRedux from 'connected-react-router';
 
 const { connectRouter, routerMiddleware } = routerRedux;
 const { isFunction } = utils;
-const { useHistory, useLocation, useParams, useRouteMatch } = router;
+const { useLocation, useParams } = router;
 
 export default function(opts = {}) {
   const history = opts.history || createHashHistory();
@@ -137,12 +137,12 @@ function patchHistory(history) {
   return history;
 }
 
-export fetch from 'isomorphic-fetch';
-export dynamic from './dynamic';
+// export fetch from 'isomorphic-fetch';
+export { dynamic } from './dynamic';
 export { connect, connectAdvanced, useSelector, useDispatch, useStore, shallowEqual };
 export { bindActionCreators };
 export { router };
 export { saga };
 export { routerRedux };
 export { createBrowserHistory, createMemoryHistory, createHashHistory };
-export { useHistory, useLocation, useParams, useRouteMatch };
+export { useLocation, useParams };

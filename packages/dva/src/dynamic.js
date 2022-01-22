@@ -53,7 +53,7 @@ function asyncComponent(config) {
   };
 }
 
-export default function dynamic(config) {
+export function dynamic(config) {
   const { app, models: resolveModels, component: resolveComponent } = config;
   return asyncComponent({
     resolve:

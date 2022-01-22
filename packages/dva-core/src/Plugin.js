@@ -23,6 +23,10 @@ export function filterHooks(obj) {
 }
 
 export default class Plugin {
+  _handleActions;
+
+  hooks;
+
   constructor() {
     this._handleActions = null;
     this.hooks = hooks.reduce((memo, key) => {
