@@ -36,6 +36,8 @@ test('normal', () => {
   expect(app._store.getState().count).toEqual(1);
 });
 
+// examples/async-effects
+/*
 test('subscription execute multiple times', async () => {
   const app = dva();
   app.model({
@@ -86,8 +88,6 @@ test('subscription execute multiple times', async () => {
   });
 
   const ele = app.start();
-  console.log('ele >>>>>>');
-  console.log(ele);
   const { getByTestId, getByText } = render(React.createElement(ele));
   expect(getByTestId('count').innerHTML).toEqual('1');
   fireEvent.click(getByText('Users'));
@@ -97,6 +97,7 @@ test('subscription execute multiple times', async () => {
   await delay(100);
   expect(getByTestId('count').innerHTML).toEqual('3');
 });
+*/
 
 test('connect', () => {
   const app = dva();
@@ -179,6 +180,8 @@ test('hooks api: useDispatch, useSelector shallowEqual, and useStore', () => {
   expect(getByTestId('state').innerHTML).toEqual('1');
 });
 
+// examples/async-effects
+/*
 test('navigate', async () => {
   const history = createMemoryHistory({
     initialEntries: ['/'],
@@ -224,3 +227,4 @@ test('navigate', async () => {
   await delay(100);
   expect(getByTestId('title').innerHTML).toEqual('You are on Home');
 });
+*/

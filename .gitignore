@@ -8,3 +8,7 @@
 /packages/**/node_modules
 /packages/**/dist
 /lerna-debug.log
+
+node_modules
+
+package-lock.json
