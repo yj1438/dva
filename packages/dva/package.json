@@ -17,7 +17,6 @@
     "react",
     "react-native",
     "redux",
-    "redux-saga",
     "elm",
     "framework",
     "frontend"
@@ -55,7 +54,6 @@
     "fetch.js",
     "index.js",
     "router.js",
-    "saga.js",
     "warnAboutDeprecatedCJSRequire.js",
     "*.d.ts"
   ]

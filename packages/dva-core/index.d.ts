@@ -6,11 +6,6 @@ import {
   Unsubscribe,
 } from 'redux';
 
-type Action<K, F, N = ''> = {
-  type: N extends string ? `${N}/${K & string}` : `${K & string}`,
-  payload: GetPayLoad<GetParam<GetRestFuncType<F>>>
-}
-
 type Dispatch = (action: Action<any, any>) => Promise<any> | any;
 
 interface onActionFunc {
@@ -19,6 +14,7 @@ interface onActionFunc {
 
 interface EffectsCommandMap {
   put: <A extends Action<any, any>>(action: A) => any,
+  dispatch: <A extends Action<any, any>>(action: A) => any,
   call: Function,
   select: Function,
   take: Function,
@@ -92,22 +88,32 @@ export interface Plugin {
 }
 
 // reducer action 部分
-type GetPayLoad<T> = T extends { payload: infer P } ? P : any;
+type GetPayLoad<T> = T extends { payload: infer P } ? P : undefined;
 
 type GetParam<T> =
-    T extends (arg: infer R) => any ? R :
-    T extends () => any ? any : any;
+    T extends (arg: infer R) => any
+    ? R
+    : T extends () => any ? undefined : undefined;
 
 type GetRestFuncType<T> = T extends (context: any, ...params: infer P) => infer R ? (...args: P) => R : never;
 
-type ReducerAction<T, N = ''> = {
-  [KK in keyof T]: {
-    type: N extends string ? `${N}/${KK & string}` : `${KK & string}`,
-    payload: GetPayLoad<GetParam<GetRestFuncType<T[KK]>>>
+type Action<K, F, N = ''> = GetPayLoad<GetParam<GetRestFuncType<F>>> extends undefined
+  ? {
+    type: N extends string ? `${N}/${K & string}` : `${K & string}`
   }
-}[keyof T]
+  : {
+    type: N extends string ? `${N}/${K & string}` : `${K & string}`,
+    payload: GetPayLoad<GetParam<GetRestFuncType<F>>>
+  }
 
-type GetModelAction<T, K = ''> = T extends { namespace: infer N, reducers: infer R } ? ReducerAction<R, N>: never;
+type GetFunctionMapAction<M, N = ''> = {
+  [K in keyof M]: Action<K, M[K], N>
+}[keyof M];
+
+type GetModelAction<T, K = ''> =
+  T extends { namespace: infer N, reducers: infer R, effects: infer E }
+  ? (GetFunctionMapAction<R, N> | GetFunctionMapAction<E, N>)
+  : never;
 
 type ActionMap<T> = {
   [K in keyof T]: GetModelAction<T[K], K>
@@ -132,8 +138,10 @@ type StateMap<T> = UnionToIntersection<{
 }[keyof T]>;
 
 type Store<T> = {
+  put: (action: ActionMap<T>) => Promise<any> | any,
   dispatch: (action: ActionMap<T>) => Promise<any> | any,
   getState: () => StateMap<T>,
+  call: () => any,
   subscribe(listener: () => void): Unsubscribe;
 }
 
@@ -240,3 +248,5 @@ export interface DvaInstance<T> {
    */
   start: (selector?: HTMLElement | string) => any,
 }
+
+declare function dva<T>(models: ModelMap<T>, opts?: DvaOption): DvaInstance<T>;

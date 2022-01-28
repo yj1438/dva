@@ -265,8 +265,8 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     _plugin: plugin,
     use: plugin.use.bind(plugin),
     model,
-    unmodel,
-    // replaceModel,
+    // unmodel: undefined,
+    // replaceModel: undefined,
     start,
   };
   return app;

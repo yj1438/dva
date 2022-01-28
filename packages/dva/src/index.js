@@ -12,7 +12,7 @@ import {
   shallowEqual,
 } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { utils, create, saga } from 'dva-core';
+import { utils, create } from 'dva-core';
 import * as router from 'react-router-dom';
 import * as routerRedux from 'connected-react-router';
 
@@ -142,7 +142,6 @@ export { dynamic } from './dynamic';
 export { connect, connectAdvanced, useSelector, useDispatch, useStore, shallowEqual };
 export { bindActionCreators };
 export { router };
-export { saga };
 export { routerRedux };
 export { createBrowserHistory, createMemoryHistory, createHashHistory };
 export { useLocation, useParams };
