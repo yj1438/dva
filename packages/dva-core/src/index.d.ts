@@ -6,41 +6,37 @@ import {
   Unsubscribe,
 } from 'redux';
 
-/**
- * @description 将联合类型转换为交叉类型
- */
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
-) => void
-  ? I
-  : never
+type Action<K, F, N = ''> = {
+  type: N extends string ? `${N}/${K & string}` : `${K & string}`,
+  payload: GetPayLoad<GetParam<GetRestFuncType<F>>>
+}
 
-export interface onActionFunc {
+type Dispatch = (action: Action<any, any>) => Promise<any> | any;
+
+interface onActionFunc {
   (api: MiddlewareAPI<any>): void,
 }
 
 interface EffectsCommandMap {
-  put: <A extends Action<any, any, any>>(action: A) => any,
-  dispatch: <A extends Action<any, any, any>>(action: A) => any,
-  getState: Function,
+  put: <A extends Action<any, any>>(action: A) => any,
   call: Function,
   select: Function,
+  take: Function,
+  cancel: Function,
   [key: string]: any,
 }
 
-export type Effect = (action: Action<any, any, any>, effects: EffectsCommandMap) => void;
+type Effect = (action: Action<any, any, any>, effects: EffectsCommandMap) => void;
 
-export type EffectsMapObject = {
+type EffectsMapObject = {
   [key: string]: Effect,
 }
 
-export { Reducer,  ReducersMapObject };
-
-export type ReducerEnhancer = {
+type ReducerEnhancer = {
   (reducer: Reducer<any>): void,
 }
 
-export interface Hooks {
+interface Hooks {
   onError?: (e: Error, dispatch: Function) => void,
   onAction?: onActionFunc | onActionFunc[],
   onStateChange?: () => void,
@@ -59,31 +55,31 @@ export interface ActionContext{
   [key: string]: any,
 }
 
-export interface SubscriptionAPI {
+interface SubscriptionAPI {
   // history: History,
-  dispatch: Dispatch<any, any, any, any>,
+  dispatch: Dispatch,
 }
 
-export type Subscription = (api: SubscriptionAPI, done: Function) => void;
+type Subscription = (api: SubscriptionAPI, done: Function) => void;
 
-export interface SubscriptionsMapObject {
+interface SubscriptionsMapObject {
   [key: string]: Subscription,
 }
 
-export interface RouterAPI {
+interface RouterAPI {
   // history: History,
-  app: DvaInstance<any, any, any, any>,
+  app: DvaInstance<any>,
 }
 
-export interface Router {
+interface Router {
   (api?: RouterAPI): JSX.Element | Object,
 }
 
-export type PluginFn = (...args: any[]) => void;
+type PluginFn = (...args: any[]) => void;
 
-export type PluginEmit = (r: Reducer) => Reducer;
+type PluginEmit = (r: Reducer) => Reducer;
 
-export interface PluginHooks {
+interface PluginHooks {
   [key: string]: Array<PluginFn>
 }
 
@@ -95,69 +91,96 @@ export interface Plugin {
   get: (key: string) => Array<PluginFn> | PluginEmit | PluginHooks,
 }
 
-type Action<N, R, E> = {
-  type:
-    | (N extends string ? `${N}/${keyof E & string}` : keyof E)
-    | (N extends string ? `${N}/${keyof R & string}` : keyof R);
-  payload?: any;
+// reducer action 部分
+type GetPayLoad<T> = T extends { payload: infer P } ? P : any;
+
+type GetParam<T> =
+    T extends (arg: infer R) => any ? R :
+    T extends () => any ? any : any;
+
+type GetRestFuncType<T> = T extends (context: any, ...params: infer P) => infer R ? (...args: P) => R : never;
+
+type ReducerAction<T, N = ''> = {
+  [KK in keyof T]: {
+    type: N extends string ? `${N}/${KK & string}` : `${KK & string}`,
+    payload: GetPayLoad<GetParam<GetRestFuncType<T[KK]>>>
+  }
+}[keyof T]
+
+type GetModelAction<T, K = ''> = T extends { namespace: infer N, reducers: infer R } ? ReducerAction<R, N>: never;
+
+type ActionMap<T> = {
+  [K in keyof T]: GetModelAction<T[K], K>
+}[keyof T];
+
+// state 部分
+/**
+ * @description 将联合类型转换为交叉类型
+ */
+ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never
+
+type State<S, N> = N extends string ? { [key in N]: S } : never;
+
+type GetModelState<T, K = ''> = T extends { namespace: infer N, state: infer S } ? State<S, N> : never;
+
+type StateMap<T> = UnionToIntersection<{
+  [K in keyof T]: GetModelState<T[K], K>
+}[keyof T]>;
+
+type Store<T> = {
+  dispatch: (action: ActionMap<T>) => Promise<any> | any,
+  getState: () => StateMap<T>,
+  subscribe(listener: () => void): Unsubscribe;
 }
 
-type Dispatch<N, S, R, E> = (action: Action<N, R, E>) => Promise<any> | S;
-
-type GetState<N, S> = () => State<N, S>;
-
-type Watch<N, S, T> = (
-  selectFn: (state: State<N, S>) => T,
-  callback: (newValue: T, oldValue: T, diffCont: any) => void,
+// watch 部分
+type Watch<T, R> = (
+  selectFn: (state: StateMap<T>) => R,
+  callback: (newValue: R, oldValue: R, diffCont: any) => void,
   options?: {
     compare?: ('default' | 'deepdiff'),
     immediate?: boolean,
   },
-  initValue?: T,
+  initValue?: R,
 ) => void;
 
-type ModelState<N, S> = N extends string ? {
-  [key in N]: S
-} : never;
-
-type State<N, S> = UnionToIntersection<ModelState<N, S>>
-
-type StoreExtend<N, S, R, E> = {
-  dispatch: Dispatch<N, S, R, E>;
-  getState: GetState<N, S>;
-  subscribe(listener: () => void): Unsubscribe;
-  watch?: Watch<N, S, any>;
-  replaceReducer(nextReducer: Reducer<S, any>): void;
-  asyncReducers?: ReducersMapObject<S, any>,
+type StoreExtend<T> = Store<T> & {
+  watch?: Watch<T, any>;
+  replaceReducer(nextReducer: Reducer<any, any>): void;
+  asyncReducers?: ReducersMapObject<any, any>,
   effects?: EffectsMapObject,
-}
-
-export type Model<N, S, R, E> = {
-  readonly namespace: N;
-  state: S;
-  reducers?: R;
-  effects?: E;
-  subscriptions?: SubscriptionsMapObject,
-};
-
-export type ModelMap<N, S, R, E> = {
-  [key: string]: Model<N, S, R, E>,
 }
 
 export type DvaOption = Hooks & {
   namespacePrefixWarning?: boolean,
   initialState?: Object,
+  onError?: Function,
+  onReducer?: Function,
 }
 
 export type DvaCreateOption = {
   initialReducer?: any,
   setupMiddlewares?: (middlewares: Array<any>) => Array<any>,
-  setupApp? (app: DvaInstance<any, any, any, any>): void,
+  setupApp? (app: DvaInstance<any>): void,
 }
 
-export interface DvaInstance<N, S, R, E> {
-  _models: Array<Model<N, S, R, E>>,
-  _store: StoreExtend<N, S, R, E>,
+type Model<N, S, R, E> = {
+  readonly namespace: N;
+  state: S;
+  reducers?: R;
+  effects?: E;
+  subscriptions?: SubscriptionsMapObject,
+}
+
+export type ModelMap<T> = T extends { [key: string]: Model<string, any, object, object> } ? T : any;
+
+export interface DvaInstance<T> {
+  _models: Array<Model<any, any, any, any>>,
+  _store: StoreExtend<T>,
   _plugin: Plugin,
   /**
    * Register an object of hooks on the application.
