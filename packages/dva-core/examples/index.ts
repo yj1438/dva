@@ -15,13 +15,13 @@ const model1 = {
   }
 }
 
-const app = dva({ aaa: model1 }, {});
+const app = dva({ model1: model1 }, {});
 
 const _store = app._store;
 const _state = _store.getState();
 
 // 这里需要重写 react-redux 模块的相关接口类型
-declare module 'react-redux' {
+declare module 'react-redux' /* or 本地引用的 dva 模块名，比如：'dva-core' */ {
   type State = typeof _state;
 
   export function useDispatch(): typeof app._store.dispatch;
@@ -36,19 +36,3 @@ declare module 'react-redux' {
 
 export default app;
 
-// Use example:
-// 
-// state.model1.count
-// 
-// app._store.dispatch({ type: 'model1/query', payload: 1 })
-// 
-// _store.watch(
-//   state => state.model1.count,
-//   (newVal, oldVal, diffCont) => {
-//     console.log(newVal, oldVal, diffCont);
-//   },
-//   {
-//     compare: 'default',
-//     immediate: true,
-//   }
-// )

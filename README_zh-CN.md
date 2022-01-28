@@ -1,5 +1,15 @@
 [English](./README.md) | 简体中文
 
+# yj1438/dva changeLog:
+
+* 调整 effects 中原有 generator function 改为更加友好的 async function；
+* 调整 effect function 的参数，(action, store)  改为 (store, action)；
+* store 上增加 watch 方法；
+* TS 改造: 增加非常完善的 d.ts，支持 dispatch、state、watch 等方法的自动校验和提示，(见 `packages/dva-core/examples`)；
+* 最新版 react/react-router/redux 相关适配，(见 `examples/async-effects`)
+
+---
+
 # dva
 
 [![codecov](https://codecov.io/gh/dvajs/dva/branch/master/graph/badge.svg)](https://codecov.io/gh/dvajs/dva)
