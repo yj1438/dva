@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Routes, Route, Link, Outlet, Switch } from 'react-router-dom';
+import { Routes, Route, Link, Outlet } from 'react-router-dom';
 import dva from 'dva/index';
 import { Detail } from './components/detail';
 import { Home } from './components/home';

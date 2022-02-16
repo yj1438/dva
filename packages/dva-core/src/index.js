@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { Provider, connect, useSelector, useDispatch, useStore } from 'react-redux';
 import invariant from 'invariant';
 import checkModel from './checkModel';
 import prefixNamespace from './prefixNamespace';
@@ -265,9 +266,21 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     _plugin: plugin,
     use: plugin.use.bind(plugin),
     model,
-    // unmodel: undefined,
-    // replaceModel: undefined,
+    unmodel() {
+      console.error('[app.unmodel] unmodel must be called after the start method executed.');
+    },
+    replaceModel() {
+      console.error(
+        '[app.replaceModel] replaceModel must be called after the start method executed.',
+      );
+    },
     start,
+    //
+    Provider,
+    connect,
+    useStore,
+    useDispatch,
+    useSelector,
   };
   return app;
 }

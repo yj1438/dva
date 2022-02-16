@@ -4,7 +4,10 @@ import {
   MiddlewareAPI,
   StoreEnhancer,
   Unsubscribe,
+  Observable,
+  AnyAction,
 } from 'redux';
+import { Connect, Provider } from 'react-redux';
 
 type Dispatch = (action: Action<any, any>) => Promise<any> | any;
 
@@ -17,12 +20,11 @@ interface EffectsCommandMap {
   dispatch: <A extends Action<any, any>>(action: A) => any,
   call: Function,
   select: Function,
-  take: Function,
-  cancel: Function,
+  getState: () => any,
   [key: string]: any,
 }
 
-type Effect = (action: Action<any, any, any>, effects: EffectsCommandMap) => void;
+type Effect = (effects: EffectsCommandMap, action: Action<any, any, any>) => void;
 
 type EffectsMapObject = {
   [key: string]: Effect,
@@ -33,7 +35,7 @@ type ReducerEnhancer = {
 }
 
 interface Hooks {
-  onError?: (e: Error, dispatch: Function) => void,
+  onError?: (e: Error, dispatch: Function, info: any) => void,
   onAction?: onActionFunc | onActionFunc[],
   onStateChange?: () => void,
   onReducer?: ReducerEnhancer,
@@ -41,14 +43,6 @@ interface Hooks {
   onHmr?: () => void,
   extraReducers?: ReducersMapObject,
   extraEnhancers?: StoreEnhancer<any>[],
-}
-
-export interface ActionContext{
-  put: <A extends Action<any, any, any>>(action: A) => any,
-  dispatch: <A extends Action<any, any, any>>(action: A) => any,
-  call: Function,
-  select: Function,
-  [key: string]: any,
 }
 
 interface SubscriptionAPI {
@@ -90,6 +84,7 @@ export interface Plugin {
 // reducer action 部分
 type GetPayLoad<T> = T extends { payload: infer P } ? P : undefined;
 
+// or use Parameters
 type GetParam<T> =
     T extends (arg: infer R) => any
     ? R
@@ -143,6 +138,8 @@ type Store<T> = {
   getState: () => StateMap<T>,
   call: () => any,
   subscribe(listener: () => void): Unsubscribe;
+  replaceReducer(nextReducer: Reducer<StateMap<T>, AnyAction>): void
+  [Symbol.observable](): Observable<StateMap<T>>
 }
 
 // watch 部分
@@ -176,18 +173,22 @@ export type DvaCreateOption = {
   setupApp? (app: DvaInstance<any>): void,
 }
 
-type Model<N, S, R, E> = {
-  readonly namespace: N;
+export type Model<S> = {
+  readonly namespace: string;
   state: S;
-  reducers?: R;
-  effects?: E;
+  reducers?: {
+    [key: string]: (state: S, action: { payload: any }) => S,
+  };
+  effects?: {
+    [key: string]: (store: EffectsCommandMap, action: { payload: any }) => void,
+  };
   subscriptions?: SubscriptionsMapObject,
 }
 
-export type ModelMap<T> = T extends { [key: string]: Model<string, any, object, object> } ? T : any;
+export type ModelMap<T> = T extends { [key: string]: Model<any> } ? T : any;
 
 export interface DvaInstance<T> {
-  _models: Array<Model<any, any, any, any>>,
+  _models: Array<Model<any>>,
   _store: StoreExtend<T>,
   _plugin: Plugin,
   /**
@@ -202,7 +203,7 @@ export interface DvaInstance<T> {
    *
    * @param model
    */
-  model: (model: Model<any, any, any, any>) => void,
+  model: (model: Model<any>) => void,
 
   /**
    * Unregister model.
@@ -247,6 +248,34 @@ export interface DvaInstance<T> {
    * @param selector
    */
   start: (selector?: HTMLElement | string) => any,
+
+  /**
+   * 
+   */
+  Provider: Provider,
+
+  /**
+   * 
+   */
+  connect: Connect<StateMap<T>>,
+
+  /**
+   * 
+   */
+  useDispatch: () => (action: ActionMap<T>) => Promise<any> | any,
+
+  /**
+   * 
+   */
+  useSelector: <S>(
+    selector: (stateArea: StateMap<T>) => S,
+    equalityFn?: (newVal: S, oldVal: S) => boolean,
+  ) => S,
+
+  /**
+   * 
+   */
+  useStore: () => StoreExtend<T>,
 }
 
-declare function dva<T>(models: ModelMap<T>, opts?: DvaOption): DvaInstance<T>;
+declare function dva<T>(models: ModelMap<T>, opts?: DvaOption, createOpts?: DvaCreateOption): DvaInstance<T>;
