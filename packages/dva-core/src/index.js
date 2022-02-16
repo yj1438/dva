@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import { Provider, connect, useSelector, useDispatch, useStore } from 'react-redux';
 import invariant from 'invariant';
 import checkModel from './checkModel';
 import prefixNamespace from './prefixNamespace';
@@ -275,12 +274,6 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
       );
     },
     start,
-    //
-    Provider,
-    connect,
-    useStore,
-    useDispatch,
-    useSelector,
   };
   return app;
 }

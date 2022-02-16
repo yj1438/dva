@@ -12,7 +12,12 @@ export function dva(models, opts = {}) {
 
   app.start();
 
+  //
+  app.Provider = Provider;
+  app.connect = connect;
+  app.useStore = useStore;
+  app.useDispatch = useDispatch;
+  app.useSelector = useSelector;
+
   return app;
 }
-
-export { Provider, connect, useSelector, useDispatch, useStore };

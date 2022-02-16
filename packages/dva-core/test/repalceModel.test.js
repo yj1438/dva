@@ -3,12 +3,6 @@ import EventEmitter from 'events';
 import { create } from '../src/index';
 
 describe('app.replaceModel', () => {
-  it('should not be available before app.start() get called', () => {
-    const app = create();
-
-    expect('replaceModel' in app).toEqual(false);
-  });
-
   it("should add model if it doesn't exist", () => {
     const app = create();
     app.start();
