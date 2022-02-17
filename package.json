@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "dva",
   "scripts": {
     "build": "father-build",
     "doc:dev": "./website/node_modules/.bin/vuepress dev ./docs",
