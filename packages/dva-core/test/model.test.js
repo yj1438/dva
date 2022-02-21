@@ -1,3 +1,4 @@
+import expect from 'expect';
 import EventEmitter from 'events';
 import { create } from '../src/index';
 
@@ -86,9 +87,9 @@ describe('app.model', () => {
         },
       },
       effects: {
-        async addBoth({ put }, action) {
-          await put({ type: 'a/add' });
-          await put({ type: 'add' });
+        addBoth({ put }) {
+          put({ type: 'a/add' });
+          put({ type: 'add' });
         },
       },
       subscriptions: {
@@ -183,9 +184,9 @@ describe('app.model', () => {
         },
       },
       effects: {
-        async addBoth({ put }, action) {
-          await put({ type: 'a/add' });
-          await put({ type: 'add' });
+        addBoth({ put }) {
+          put({ type: 'a/add' });
+          put({ type: 'add' });
         },
       },
     });

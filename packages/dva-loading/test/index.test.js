@@ -1,5 +1,5 @@
 import expect from 'expect';
-import dva from 'dva';
+import dva from '../../dva/dist/index';
 import createLoading from '../src/index';
 
 const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));

@@ -31,7 +31,7 @@
     "flatten": "^1.0.3",
     "global": "^4.4.0",
     "invariant": "^2.2.4",
-    "is-plain-object": "^5.0.0",
+    "is-plain-object": "^2.0.4",
     "warning": "^4.0.0"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-import dva from 'dva';
+import dva from '../../dva/dist/index';
 import userImmer from '../src/index';
 
 describe('dva-immer', () => {

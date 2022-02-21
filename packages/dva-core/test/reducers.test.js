@@ -131,8 +131,8 @@ describe('reducers', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        async putSetState({ put }, action) {
-          await put({ type: 'setState' });
+        putSetState({ put }) {
+          put({ type: 'setState' });
         },
       },
       reducers: [

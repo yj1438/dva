@@ -1,3 +1,4 @@
+import expect from 'expect';
 import { create } from '../src/index';
 
 describe('checkModel', () => {

@@ -42,11 +42,11 @@ describe('effects', () => {
         },
       },
       effects: {
-        async putWithNamespace({ put }, { payload }) {
-          await put({ type: 'count/add', payload });
+        putWithNamespace({ put }, { payload }) {
+          put({ type: 'count/add', payload });
         },
-        async putWithoutNamespace({ put }, { payload }) {
-          await put({ type: 'add', payload });
+        putWithoutNamespace({ put }, { payload }) {
+          put({ type: 'add', payload });
         },
       },
     });
@@ -139,8 +139,8 @@ describe('effects', () => {
       namespace: 'count',
       state: 0,
       effects: {
-        async addDelay({ put }, _) {
-          await put({ type: 'loading/show' });
+        addDelay({ dispatch }) {
+          dispatch({ type: 'loading/show' });
         },
       },
     });
@@ -204,7 +204,7 @@ describe('effects', () => {
       },
       effects: {
         // eslint-disable-next-line
-        async generate() {
+        generate() {
           throw new Error('Effect error');
         },
       },
@@ -313,8 +313,7 @@ describe('effects', () => {
         async addDelay({ put, call, select }, { payload }) {
           await call(delay, payload.delay || 100);
           await put({ type: 'add', payload: payload.amount });
-          const res = await select(state => state.count);
-          return res;
+          return select(state => state.count);
         },
       },
     });
@@ -350,9 +349,8 @@ describe('effects', () => {
       effects: {
         async addDelay({ put, call, select }, { payload }) {
           await call(delay, payload.delay || 100);
-          await put({ type: 'add', payload: payload.amount });
-          const res = await select(state => state.count);
-          return res;
+          put({ type: 'add', payload: payload.amount });
+          return select(state => state.count);
         },
       },
     });
