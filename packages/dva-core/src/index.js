@@ -236,10 +236,11 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
       const { immediate = false, compare = 'default' } = options;
       const initValue = selectFn(store.getState());
       const w = watch(store.getState, selectFn, compare, initValue);
-      store.subscribe(w(callback /* callback = fn(newValue, oldValue){} */));
+      const unwatch = store.subscribe(w(callback /* callback = fn(newValue, oldValue){} */));
       if (immediate) {
         callback(initValue, undefined, initValue);
       }
+      return unwatch;
     };
 
     // Setup app

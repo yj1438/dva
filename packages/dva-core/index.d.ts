@@ -151,7 +151,7 @@ type Watch<T, R> = (
     immediate?: boolean,
   },
   initValue?: R,
-) => void;
+) => Function;
 
 type StoreExtend<T> = Store<T> & {
   watch?: Watch<T, any>;
